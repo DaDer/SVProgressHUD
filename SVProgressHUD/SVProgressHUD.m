@@ -652,6 +652,16 @@ static const CGFloat SVProgressHUDLabelSpacing = 8.0f;
 
 #if !defined(SV_APP_EXTENSIONS) && TARGET_OS_IOS
     self.frame = [[[UIApplication sharedApplication] delegate] window].bounds;
+
+#if TARGET_OS_IOS && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+    if (@available(iOS 13.0, *)) {
+        UIScene *scene = [[[[UIApplication sharedApplication] connectedScenes] allObjects] firstObject];
+        if ([scene.delegate conformsToProtocol:@protocol(UIWindowSceneDelegate)]) {
+            self.frame = ((id<UIWindowSceneDelegate>)scene.delegate).window.bounds;
+        }
+    }
+#endif
+    
     UIInterfaceOrientation orientation = UIApplication.sharedApplication.statusBarOrientation;
 #elif !defined(SV_APP_EXTENSIONS) && !TARGET_OS_IOS
     self.frame= [UIApplication sharedApplication].keyWindow.bounds;
@@ -1225,6 +1235,16 @@ static const CGFloat SVProgressHUDLabelSpacing = 8.0f;
     // Update frames
 #if !defined(SV_APP_EXTENSIONS)
     CGRect windowBounds = [[[UIApplication sharedApplication] delegate] window].bounds;
+
+#if TARGET_OS_IOS && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+    if (@available(iOS 13.0, *)) {
+        UIScene *scene = [[[[UIApplication sharedApplication] connectedScenes] allObjects] firstObject];
+        if ([scene.delegate conformsToProtocol:@protocol(UIWindowSceneDelegate)]) {
+            windowBounds = ((id<UIWindowSceneDelegate>)scene.delegate).window.bounds;
+        }
+    }
+#endif
+    
     _controlView.frame = windowBounds;
 #else
     _controlView.frame = [UIScreen mainScreen].bounds;
@@ -1370,6 +1390,15 @@ static const CGFloat SVProgressHUDLabelSpacing = 8.0f;
     
 - (UIWindow *)frontWindow {
 #if !defined(SV_APP_EXTENSIONS)
+#if TARGET_OS_IOS && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+    if (@available(iOS 13.0, *)) {
+        UIScene *scene = [[[[UIApplication sharedApplication] connectedScenes] allObjects] firstObject];
+        if ([scene.delegate conformsToProtocol:@protocol(UIWindowSceneDelegate)]) {
+            return ((id<UIWindowSceneDelegate>)scene.delegate).window;
+        }
+    }
+#endif
+    
     NSEnumerator *frontToBackWindows = [UIApplication.sharedApplication.windows reverseObjectEnumerator];
     for (UIWindow *window in frontToBackWindows) {
         BOOL windowOnMainScreen = window.screen == UIScreen.mainScreen;
